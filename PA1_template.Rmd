@@ -1,25 +1,100 @@
 ---
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
+title: "Step Data"
+author: "Jeff Jackson"
+date: "February 15, 2017"
+output: html_document
 ---
 
+###The data was loaded into R.
 
-## Loading and preprocessing the data
-
-
-
-## What is mean total number of steps taken per day?
-
-
-
-## What is the average daily activity pattern?
+```{r}
+library(dplyr)
+library(knitr)
+file <- "C:/Users/Jeff/Research/activity.csv"
+raw.data <- read.csv(file)
+```
 
 
-
-## Imputing missing values
-
+###Data was reorganized to put intervals as observations and dates as columns.
 
 
-## Are there differences in activity patterns between weekdays and weekends?
+```{r}
+dates <- unique(raw.data[,2])
+intervals <- unique(raw.data[,3])
+all.data <- data.frame()
+
+for (i in intervals){
+        int.data<- filter(raw.data,interval == i)
+        steps.data <- int.data[,1]
+        all.data <- rbind(all.data, steps.data)
+}
+```
+
+
+###The total number of steps taken every day by frequency and the summary of total steps was analyzed.
+
+
+```{r}
+total.steps <- as.numeric(colSums(all.data, na.rm = TRUE))
+hist(total.steps, main = "Frequency of Total Steps per Day", xlab = "Steps per Day")
+summary(total.steps)
+```
+
+
+###The mean number of steps taken at every interval was plotted which illustrated a peak mean of 206.1698 at interval 835.
+
+
+```{r}
+int.steps <- as.numeric(rowMeans(all.data, na.rm = TRUE))
+plot(x = intervals, y=int.steps, xlab = "Intervals", ylab = "Mean Steps", main = "Mean Steps by Interval", pch = 20, cex = 0.5)
+tsteps <- cbind(intervals, int.steps)
+print(tsteps[which.max(tsteps[,2]),])
+```
+
+
+###The total number of NA values in the data was calculated.
+
+
+```{r}
+sum(is.na(raw.data))
+```
+
+
+###As this is a large number of missing data points, the data was then modified to replace NA values with the mean value of all available data for the respective interval containing the NA.
+
+
+```{r}
+all.data2 <- all.data
+ind <- which(is.na(all.data2), arr.ind=TRUE)
+all.data2[ind] <- rowMeans(all.data2,  na.rm = TRUE)[ind[,1]]
+```
+
+
+###The modified data was again analyzed looking at frequencies of total steps by day. Which illustrated a shift toward a more normal distribution. Additionally as noted in the summary table, the mean and median increased slightly as well.
+
+
+```{r}
+total.steps2 <- as.numeric(colSums(all.data2))
+hist(total.steps2, main = "Frequency of Total Steps per Day", xlab = "Steps per Day")
+summary(total.steps2)
+```
+
+
+###Finally a comparison between weekday (Monday - Friday) and weekend (Saturday & Sunday) activity was plotted.  This illustrates a slight reduction in activity on weekends, with similar patterns of activity with respect to time.
+
+
+```{r}
+library(lubridate)
+dates2 <- as.Date(dates, format = '%Y-%m-%d')
+dates3 <- weekdays(dates2)
+wkends <- grep("Saturday|Sunday", dates3)
+wkdays <- grep("Monday|Tuesday|Wednesday|Thursday|Friday", dates3)
+wkday.data <- all.data2[ ,wkdays]
+wkend.data <- all.data2[ ,wkends]
+wkday.steps <- as.numeric(rowMeans(wkday.data))
+wkend.steps <- as.numeric(rowMeans(wkend.data))
+par(mfrow=c(1,2))
+plot(x = intervals, y=wkday.steps, xlab = "Intervals", ylab = "Mean Steps", main = "Weekday Mean Steps by Interval", ylim = c(0,250), pch = 20, cex = 0.5)
+plot(x = intervals, y=wkend.steps, xlab = "Intervals", ylab = "", yaxt="n", main = "Weekend Mean Steps by Interval", ylim = c(0,250), col = "red", pch = 20, cex = 0.5)
+```
+
