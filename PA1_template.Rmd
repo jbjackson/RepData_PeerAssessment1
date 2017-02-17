@@ -2,7 +2,9 @@
 title: "Step Data"
 author: "Jeff Jackson"
 date: "February 15, 2017"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ###The data was loaded into R.
