@@ -49,7 +49,7 @@ summary(total.steps)
 
 ```{r}
 int.steps <- as.numeric(rowMeans(all.data, na.rm = TRUE))
-plot(x = intervals, y=int.steps, xlab = "Intervals", ylab = "Mean Steps", main = "Mean Steps by Interval", pch = 20, cex = 0.5)
+plot(type = "l", x = intervals, y=int.steps, xlab = "Intervals", ylab = "Mean Steps", main = "Mean Steps by Interval", pch = 20, cex = 0.5)
 tsteps <- cbind(intervals, int.steps)
 print(tsteps[which.max(tsteps[,2]),])
 ```
@@ -97,7 +97,7 @@ wkend.data <- all.data2[ ,wkends]
 wkday.steps <- as.numeric(rowMeans(wkday.data))
 wkend.steps <- as.numeric(rowMeans(wkend.data))
 par(mfrow=c(1,2))
-plot(x = intervals, y=wkday.steps, xlab = "Intervals", ylab = "Mean Steps", main = "Weekday Mean Steps by Interval", ylim = c(0,250), pch = 20, cex = 0.5)
-plot(x = intervals, y=wkend.steps, xlab = "Intervals", ylab = "", yaxt="n", main = "Weekend Mean Steps by Interval", ylim = c(0,250), col = "red", pch = 20, cex = 0.5)
+plot(type = "l", x = intervals, y=wkday.steps, xlab = "Intervals", ylab = "Mean Steps", main = "Weekday Mean Steps by Interval", ylim = c(0,250), pch = 20, cex = 0.5)
+plot(type = "l", x = intervals, y=wkend.steps, xlab = "Intervals", ylab = "", yaxt="n", main = "Weekend Mean Steps by Interval", ylim = c(0,250), col = "red", pch = 20, cex = 0.5)
 ```
 
